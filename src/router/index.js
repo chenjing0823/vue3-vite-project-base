@@ -16,6 +16,12 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "about" */ "../views/About.vue"),
   },
+  {
+    path: "/xbb-excel",
+    name: "xbbExcel",
+    component: () =>
+      import(/* webpackChunkName: "excel" */ "@/views/excel/index.vue"),
+  },
 ];
 
 const router = createRouter({
