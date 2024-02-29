@@ -1,23 +1,35 @@
 .DS_Store
-node_modules
-/dist
-
-
-# local env files
-.env.local
-.env.*.local
-
-# Log files
+node_modules/
+/dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
+/test/unit/coverage/
+/test/e2e/reports/
+selenium-debug.log
+*.zip
+*.7z
+.nvmrc
 
+# 依赖lock文件
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
 # Editor directories and files
 .idea
-.vscode
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
+package-lock.json
+apiDoc/
+.vscode/launch.json
+
+# 压缩包
+*.zip
+*.7z
+*.rar
+# Other
+eslint-*.*
+stylelint-result.txt
+npminstall-debug.log
