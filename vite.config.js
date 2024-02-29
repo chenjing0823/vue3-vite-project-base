@@ -44,15 +44,15 @@ export default defineConfig(({ command, mode }) => {
           }),
         ],
       },
-      // preprocessorOptions: {
-      //   scss: {
-      //     // 注意，键名是scss不是sass！
-      //     // 这里写你想导入全局scss变量的路径，注意只能写相对路径，alias貌似在css中不会生效
-      //     additionalData: `
-      //               @import './src/assets/scss/tools-mixins.scss';
-      //           `,
-      //   },
-      // },
+      preprocessorOptions: {
+        scss: {
+          // 注意，键名是scss不是sass！
+          // 这里写你想导入全局scss变量的路径，注意只能写相对路径，alias貌似在css中不会生效
+          additionalData: `
+                    @import './src/assets/scss/tools-mixins.scss';
+                `,
+        },
+      },
     },
     // server
     server: {
