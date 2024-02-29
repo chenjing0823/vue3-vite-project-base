@@ -20,6 +20,10 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       alias: [
         {
+          find: "@univerjs",
+          replacement: path.join(__dirname, "/node_modules/@univerjs"),
+        },
+        {
           find: "@",
           replacement: path.join(__dirname, "/src"),
         },
