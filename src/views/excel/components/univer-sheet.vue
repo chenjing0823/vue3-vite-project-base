@@ -3,21 +3,23 @@
 </template>
 
 <script>
-import "@univerjs/design/lib/index.css";
-import "@univerjs/ui/lib/index.css";
-import "@univerjs/sheets-ui/lib/index.css";
-import "@univerjs/sheets-formula/lib/index.css";
+import '@univerjs/design/lib/index.css'
+import '@univerjs/ui/lib/index.css'
+import '@univerjs/sheets-ui/lib/index.css'
+import '@univerjs/sheets-formula/lib/index.css'
 
-import { Univer } from "@univerjs/core";
-import { defaultTheme } from "@univerjs/design";
-import { UniverDocsPlugin } from "@univerjs/docs";
-import { UniverDocsUIPlugin } from "@univerjs/docs-ui";
-import { UniverFormulaEnginePlugin } from "@univerjs/engine-formula";
-import { UniverRenderEnginePlugin } from "@univerjs/engine-render";
-import { UniverSheetsPlugin } from "@univerjs/sheets";
-import { UniverSheetsFormulaPlugin } from "@univerjs/sheets-formula";
-import { UniverSheetsUIPlugin } from "@univerjs/sheets-ui";
-import { UniverUIPlugin } from "@univerjs/ui";
+import { Univer } from '@univerjs/core'
+import { defaultTheme } from '@univerjs/design'
+import { UniverDocsPlugin } from '@univerjs/docs'
+import { UniverDocsUIPlugin } from '@univerjs/docs-ui'
+import { UniverFormulaEnginePlugin } from '@univerjs/engine-formula'
+import { UniverRenderEnginePlugin } from '@univerjs/engine-render'
+import { UniverSheetsPlugin } from '@univerjs/sheets'
+import { UniverSheetsFormulaPlugin } from '@univerjs/sheets-formula'
+import { UniverSheetsUIPlugin } from '@univerjs/sheets-ui'
+import { UniverUIPlugin } from '@univerjs/ui'
+
+import { FUniver } from '@univerjs/facade'
 
 export default {
   name: 'UniverSheet',
@@ -25,83 +27,96 @@ export default {
     // workbook data
     data: {
       value: Object,
-      default: () => ({}),
-    },
+      default: () => ({})
+    }
   },
   watch: {
     // watch data change, and re-create univer instance
     data: {
-      handler (val) {
-        this.destroyUniver();
-        this.init(val);
+      handler(val) {
+        this.destroyUniver()
+        this.init(val)
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
-  data () {
+  data() {
     return {
       // univer instance
       univer: null,
       // workbook instance
       workbook: null,
-    };
+      univerAPI: null
+    }
   },
-  mounted () {
-    this.init(this.data);
+  mounted() {
+    this.init(this.data)
   },
   methods: {
     /**
      * Initialize univer instance and workbook instance
      * @param data {IWorkbookData} document see https://univer.work/api/core/interfaces/IWorkbookData.html
      */
-     init (data = {}) {
+    init(data = {}) {
       const univer = new Univer({
-        theme: defaultTheme,
-      });
-      this.univer = univer;
+        theme: defaultTheme
+      })
+      this.univer = univer
 
       // core plugins
-      univer.registerPlugin(UniverRenderEnginePlugin);
-      univer.registerPlugin(UniverFormulaEnginePlugin);
+      univer.registerPlugin(UniverRenderEnginePlugin)
+      univer.registerPlugin(UniverFormulaEnginePlugin)
       univer.registerPlugin(UniverUIPlugin, {
         container: this.$refs.container,
         header: true,
         toolbar: true,
-        footer: true,
-      });
+        footer: true
+      })
 
       // doc plugins
       univer.registerPlugin(UniverDocsPlugin, {
-        hasScroll: false,
-      });
-      univer.registerPlugin(UniverDocsUIPlugin);
+        hasScroll: false
+      })
+      univer.registerPlugin(UniverDocsUIPlugin)
 
       // sheet plugins
-      univer.registerPlugin(UniverSheetsPlugin);
-      univer.registerPlugin(UniverSheetsUIPlugin);
-      univer.registerPlugin(UniverSheetsFormulaPlugin);
+      univer.registerPlugin(UniverSheetsPlugin)
+      univer.registerPlugin(UniverSheetsUIPlugin)
+      univer.registerPlugin(UniverSheetsFormulaPlugin)
 
       // create workbook instance
-      this.workbook = univer.createUniverSheet(data);
+      this.workbook = univer.createUniverSheet(data)
+
+      this.univerAPI = FUniver.newAPI(univer)
     },
     /**
      * Destroy univer instance and workbook instance
      */
-    destroyUniver () {
-      this.univer?.dispose();
-      this.univer = null;
-      this.workbook = null;
+    destroyUniver() {
+      this.univer?.dispose()
+      this.univer = null
+      this.workbook = null
+
+      this.univerAPI = null
     },
     /**
      * Get workbook data
      */
-    getData () {
+    getData() {
       if (!this.workbook) {
-        throw new Error('Workbook is not initialized');
+        throw new Error('Workbook is not initialized')
       }
-      return this.workbook.save();
+      return this.workbook.save()
     },
-  },
+    setData({ pos, value }) {
+      const [col, row, colNum, rowNum] = pos
+
+      const activeSheet = this.univerAPI.getActiveWorkbook().getActiveSheet()
+
+      const range = activeSheet.getRange(col, row, colNum, rowNum)
+      range?.setValue(value)
+    }
+  }
 }
 </script>
 
