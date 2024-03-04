@@ -21,7 +21,6 @@ yarn.lock
 *.ntvs*
 *.njsproj
 *.sln
-package-lock.json
 apiDoc/
 .vscode/launch.json
 
