@@ -3,6 +3,10 @@
     <div class="btn">
       <button @click="getData" title="print current workbook data to console">Get Data</button>
       <button @click="setData" title="print current workbook data to console">setData</button>
+      <button @click="getArrayData" title="print current workbook data to console">
+        获取导出数据
+      </button>
+      <button @click="exportExcel" title="print current workbook data to console">导出</button>
     </div>
 
     <UniverSheet id="sheet" ref="univerRef" :data="data" v-if="visible" />
@@ -15,6 +19,9 @@ import UniverSheet from './components/univer-sheet.vue'
 import DefaultWorkBookData from './mock/default-data'
 
 import utils from '@/utils/index.js'
+
+import FileSaver from 'file-saver'
+import * as XLSX from 'xlsx'
 export default {
   name: 'index',
 
@@ -101,6 +108,51 @@ export default {
       const result = this.$refs.univerRef?.getData()
       utils.copyToClipboard(JSON.stringify(result, null, 2))
       console.log(JSON.stringify(result, null, 2))
+    },
+    exportExcel() {
+      const allSheets = this.$refs.univerRef.getData().sheets // 获取所有的sheet表
+      const wb = XLSX.utils.book_new()
+
+      // 处理每个sheet表
+      Object.entries(allSheets).forEach(([key, value]) => {
+        const sheetData = this.getSheetData(value.cellData) // 表内数据获取
+        const ws = XLSX.utils.aoa_to_sheet(sheetData)
+        // 合并单元格
+        const mergeData = this.getSheetMerge(value.mergeData) // 表内合并单元格获取
+        ws['!merges'] = mergeData
+        XLSX.utils.book_append_sheet(wb, ws, value.name)
+      })
+      // 导出Excel文件
+      XLSX.writeFile(wb, '无标题表格.xlsx')
+    },
+    /**
+     * @description: 获取每个sheet表内的数据，先获取行数据，再获取每行的列数据。
+     * @param {*} cellData 
+     */
+    getSheetData(cellData) {
+      const getRowArray = (data) => {
+        const cloumnArray = new Array()
+        Object.entries(data).forEach(([key, value]) => {
+          cloumnArray[key] = value ? value.v : ''
+        })
+        return cloumnArray
+      }
+
+      const sheetData = cellData || {}
+      const rowArray = new Array()
+      Object.entries(sheetData).forEach(([key, value]) => {
+        console.log(key, value)
+        rowArray[key] = getRowArray(value)
+      })
+      return rowArray
+    },
+    getSheetMerge(mergeData) {
+      const merges = []
+      mergeData.forEach((m) => {
+        const { startRow, startColumn, endRow, endColumn } = m
+        merges.push({ s: { r: startRow, c: startColumn }, e: { r: endRow, c: endColumn } })
+      })
+      return merges
     }
   }
 }

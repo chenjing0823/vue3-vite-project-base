@@ -132,4 +132,9 @@ export default {
 :global(.univer-menubar) {
   display: none;
 }
+
+/* 组件内 类名为 univer-slide-tab-active 的color 改为绿色 */
+:deep(.univer-slide-tab-active) {
+  color: #ff6a00;
+}
 </style>
