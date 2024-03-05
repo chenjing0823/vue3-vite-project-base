@@ -116,6 +116,8 @@ export default {
       // 处理每个sheet表
       Object.entries(allSheets).forEach(([key, value]) => {
         const sheetData = this.getSheetData(value.cellData) // 表内数据获取
+        console.log('前',value.cellData)
+        console.log('hou',sheetData)
         const ws = XLSX.utils.aoa_to_sheet(sheetData)
         // 合并单元格
         const mergeData = this.getSheetMerge(value.mergeData) // 表内合并单元格获取

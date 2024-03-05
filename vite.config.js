@@ -24,6 +24,10 @@ export default defineConfig(({ command, mode }) => {
           replacement: path.join(__dirname, "/node_modules/@univerjs"),
         },
         {
+          find: "@tinymce",
+          replacement: path.join(__dirname, "/node_modules/@tinymce"),
+        },
+        {
           find: "@",
           replacement: path.join(__dirname, "/src"),
         },

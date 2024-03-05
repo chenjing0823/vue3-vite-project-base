@@ -22,6 +22,12 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "excel" */ "@/views/excel/index.vue"),
   },
+  {
+    path: "/xbb-word",
+    name: "xbbWord",
+    component: () =>
+      import(/* webpackChunkName: "excel" */ "@/views/word/index.vue"),
+  },
 ];
 
 const router = createRouter({

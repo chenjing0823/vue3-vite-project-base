@@ -35,5 +35,6 @@ if (
   exec(`vite --config ./vite.config.js --mode ${format}`)
 } else if (command === 'build') {
   console.log(`启动构建服务，当前环境：${format}`)
-  exec(`vite build --mode ${format} && node ./build/copy.js`)
+  exec(`vite build --mode ${format}`)
+  // exec(`vite build --mode ${format} && node ./build/copy.js`)
 }
