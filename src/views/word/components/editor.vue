@@ -27,7 +27,7 @@ import 'tinymce/plugins/charmap' //特殊字符
 // import 'tinymce/plugins/save' //保存
 
 // 自定义插件
-import '@/views/word/components/plugins/test.js'
+import '@/views/word/components/plugins/xbb-paste.js'
 
 // 按需求
 // import 'tinymce/plugins/media'
@@ -71,7 +71,7 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: 'fullscreen image link table lists wordcount help charmap placeholder paste test'
+      default: 'fullscreen image link table lists wordcount help charmap placeholder paste xbbpaste'
       // 'preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr nonbreaking insertdatetime advlist lists wordcount imagetools textpattern autosave autoresize'
     },
     toolbar: {
@@ -79,7 +79,7 @@ export default {
       default:
         'code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link codesample | alignleft aligncenter alignright alignjustify outdent indent formatpainter | \
         blocks styles fontfamily fontselect fontsize | bullist numlist | blockquote subscript superscript removeformat | \
-          table image charmap hr pagebreak insertdatetime | print fullscreen help test'
+          table image charmap hr pagebreak insertdatetime | print fullscreen help xbbpaste'
       // 'code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link codesample | alignleft aligncenter alignright alignjustify outdent indent formatpainter | \
       // blocks styleselect formatselect fontselect fontsizeselect | bullist numlist | blockquote subscript superscript removeformat | \
       //   table image media charmap hr pagebreak insertdatetime | print fullscreen help'
@@ -98,7 +98,7 @@ export default {
         // toolbar_drawer: 'wrap',
         plugins: this.plugins,
         toolbar: this.toolbar,
-        contextmenu: 'copy cut paste selectall test',
+        contextmenu: 'copy cut paste xbbpaste selectall test',
         // contextmenu: false,
         content_style: contentStyle,
         font_size_formats: '12px 14px 16px 18px 24px 36px 48px 56px 72px',
@@ -140,11 +140,23 @@ export default {
   mounted() {
     tinymce.init({})
     setTimeout(() => {
-      console.log('contentStyle', contentStyle)
       console.log('aaa', tinymce.activeEditor.ui.registry.getAll().buttons)
     })
+    this.getClipboardContent()
   },
-  methods: {},
+  methods: {
+    getClipboardContent() {
+      navigator.clipboard
+        .readText()
+        .then((text) => {
+          console.log('Clipboard content:', text)
+          // 在这里处理剪贴板内容
+        })
+        .catch((err) => {
+          console.error('Failed to read clipboard contents: ', err)
+        })
+    }
+  },
   watch: {
     value(newValue) {
       this.content = newValue
