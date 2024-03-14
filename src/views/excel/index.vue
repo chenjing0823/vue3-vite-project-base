@@ -183,6 +183,7 @@ export default {
       const rowStyle = {}
       const style = styles[styleKey]
       Object.entries(style).forEach(([key, value]) => {
+        if (!value) return
         if (key === 'ht') {
           // 水平对齐
           if (!rowStyle[cell]) {
@@ -231,7 +232,6 @@ export default {
           if (!rowStyle[cell].font) {
             rowStyle[cell].font = {}
           }
-          if (!value) return
           rowStyle[cell].font.color = {
             argb: rgbToArgb(value.rgb)
           }
@@ -249,7 +249,6 @@ export default {
           if (!rowStyle[cell]) {
             rowStyle[cell] = {}
           }
-          if (!value) return
           rowStyle[cell].fill = {
             type: 'pattern',
             pattern: 'solid',
