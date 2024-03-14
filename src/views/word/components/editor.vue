@@ -23,7 +23,7 @@ import 'tinymce/plugins/link' //超链接
 import 'tinymce/plugins/wordcount' //字数统计
 import 'tinymce/plugins/fullscreen' //全屏
 import 'tinymce/plugins/help' //帮助
-import 'tinymce/plugins/charmap' //特殊字符
+// import 'tinymce/plugins/charmap' //特殊字符
 // import 'tinymce/plugins/save' //保存
 
 // 自定义插件
@@ -71,7 +71,7 @@ export default {
     },
     plugins: {
       type: [String, Array],
-      default: 'fullscreen image link table lists wordcount help charmap placeholder paste xbbpaste'
+      default: 'fullscreen image link table lists wordcount help placeholder paste xbbpaste'
       // 'preview searchreplace autolink directionality visualblocks visualchars fullscreen image link media template code codesample table charmap hr nonbreaking insertdatetime advlist lists wordcount imagetools textpattern autosave autoresize'
     },
     toolbar: {
@@ -79,7 +79,7 @@ export default {
       default:
         'code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link codesample | alignleft aligncenter alignright alignjustify outdent indent formatpainter | \
         blocks styles fontfamily fontselect fontsize | bullist numlist | blockquote subscript superscript removeformat | \
-          table image charmap hr pagebreak insertdatetime | print fullscreen help xbbpaste'
+          table image hr | print fullscreen help xbbpaste'
       // 'code undo redo restoredraft | cut copy paste pastetext | forecolor backcolor bold italic underline strikethrough link codesample | alignleft aligncenter alignright alignjustify outdent indent formatpainter | \
       // blocks styleselect formatselect fontselect fontsizeselect | bullist numlist | blockquote subscript superscript removeformat | \
       //   table image media charmap hr pagebreak insertdatetime | print fullscreen help'
