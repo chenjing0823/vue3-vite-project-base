@@ -27,8 +27,35 @@ import ExcelJS from 'exceljs'
 import FileSaver from 'file-saver'
 import * as XLSX from 'xlsx'
 
-const rgbToArgb = (rgb) => {
-  return 'FF' + rgb.substring(1) // Add FF prefix to convert RGB to ARGB
+const rgbToArgb = (color) => {
+  if (color.startsWith('#')) {
+    // 处理十六进制格式
+    let hex = color.substring(1) // 去除 #
+    if (hex.length === 3) {
+      // 将缩写形式的十六进制扩展为标准形式
+      hex = hex.replace(/(.)/g, '$1$1')
+    }
+    return 'FF' + hex.toUpperCase() // 默认 alpha 值为 FF
+  } else if (color.startsWith('rgb(')) {
+    // 处理 RGB 格式
+    const rgb = color
+      .substring(4, color.length - 1)
+      .split(',')
+      .map((c) => parseInt(c.trim()))
+    const alpha = 'FF' // 默认 alpha 值为 FF
+    return (
+      alpha +
+      rgb
+        .map((c) => {
+          const hex = c.toString(16).toUpperCase()
+          return hex.length === 1 ? '0' + hex : hex
+        })
+        .join('')
+    )
+  } else {
+    // 无法识别的格式
+    return ''
+  }
 }
 export default {
   name: 'index',
@@ -204,6 +231,7 @@ export default {
           if (!rowStyle[cell].font) {
             rowStyle[cell].font = {}
           }
+          if (!value) return
           rowStyle[cell].font.color = {
             argb: rgbToArgb(value.rgb)
           }
@@ -221,6 +249,7 @@ export default {
           if (!rowStyle[cell]) {
             rowStyle[cell] = {}
           }
+          if (!value) return
           rowStyle[cell].fill = {
             type: 'pattern',
             pattern: 'solid',
@@ -337,6 +366,18 @@ export default {
           FileSaver.saveAs(file, 'ExcelJS.xlsx')
         })
         .catch((error) => console.log('Error writing excel export', error))
+      // const buffer = await workbook.xlsx.writeBuffer();
+
+      // // 将 Excel 文件添加到 FormData
+      // const excelBlob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      // formData.append('excelFile', excelBlob, 'output.xlsx');
+
+      // // 发送 POST 请求上传文件
+      // const response = await axios.post(url, formData, {
+      //   headers: {
+      //     'Content-Type': 'multipart/form-data'
+      //   }
+      // });
       /**
       import axios from 'axios'
 
