@@ -1,7 +1,7 @@
 import axios from 'axios'
 import sha256 from 'sha256'
 import storage from '@/utils/storage'
-import tip from '@/utils/cloudCodeAPI'
+// import tip from '@/utils/cloudCodeAPI'
 const { VITE_APP_MODE, VITE_GATEWAY_URL } = import.meta.env
 
 // 多个相同报错提示
@@ -67,10 +67,10 @@ class HttpRequest {
       (err) => {
         // 请求错误处理
         console.log('请求拦截错误', err)
-        tip.messageBox({
-          type: 'error',
-          message: err
-        })
+        // tip.messageBox({
+        //   type: 'error',
+        //   message: err
+        // })
         return Promise.reject(err)
       }
     )
@@ -86,10 +86,10 @@ class HttpRequest {
           if (!data.success) {
             if (data.code === EXPIRE_LOGIN) {
               localStorage.removeItem('USER_TOKEN')
-              tip.messageBox({
-                type: 'error',
-                message: data.msg
-              })
+              // tip.messageBox({
+              //   type: 'error',
+              //   message: data.msg
+              // })
               // setTimeout(() => {
               //   window.location = '/'
               // }, 1500)
@@ -98,11 +98,11 @@ class HttpRequest {
             const extraCode = [1630012, 1630010, 1630005, 1630006, 1630019]
             if (errorMsg !== data.msg && !extraCode.includes(data.code)) {
               errorMsg = data.msg
-              noErrorMessage ||
-                tip.messageBox({
-                  type: 'error',
-                  message: data.msg
-                })
+              // noErrorMessage ||
+              //   tip.messageBox({
+              //     type: 'error',
+              //     message: data.msg
+              //   })
               setTimeout(() => {
                 errorMsg = undefined
               }, 800)
@@ -118,10 +118,10 @@ class HttpRequest {
       (err) => {
         // 响应错误处理
         console.log('返回接口拦截时拦截到错误', err)
-        tip.messageBox({
-          type: 'error',
-          message: '服务器链接异常，请稍候重试...'
-        })
+        // tip.messageBox({
+        //   type: 'error',
+        //   message: '服务器链接异常，请稍候重试...'
+        // })
         return Promise.reject(err)
       }
     )
