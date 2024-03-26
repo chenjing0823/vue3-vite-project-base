@@ -21,12 +21,17 @@ import { UniverUIPlugin } from '@univerjs/ui'
 
 import { FUniver } from '@univerjs/facade'
 
+import xbb from '@xbb/xbb-utils'
 export default {
   name: 'UniverSheet',
   props: {
     // workbook data
     data: {
       value: Object,
+      default: () => ({})
+    },
+    handInput: {
+      type: Object,
       default: () => ({})
     }
   },
@@ -69,7 +74,6 @@ export default {
       univer.registerPlugin(UniverUIPlugin, {
         container: this.$refs.container,
         header: true,
-        toolbar: true,
         footer: true
       })
 
@@ -88,6 +92,28 @@ export default {
       this.workbook = univer.createUniverSheet(data)
 
       this.univerAPI = FUniver.newAPI(univer)
+      // define a custom error
+      this.univerAPI.onBeforeCommandExecute((command) => {
+        const { id, type, params } = command
+        const arr = [
+          'sheet.operation.set-cell-edit-visible', // 双击单元格编辑
+          'doc.command.insert-text', // 上方插入文本
+          'sheet.operation.set-activate-cell-edit' // 上方插入文本点击 单元格编辑框激活
+        ]
+        if (arr.includes(id)) {
+          const startRow = xbb._get(params, 'primary.startRow', -1)
+          const startColumn = xbb._get(params, 'primary.startColumn', -1)
+          // const startRow = xbb._get(params, 'selections[0].range.startRow', -1)
+          // const startColumn = xbb._get(params, 'selections[0].range.startColumn', -1)
+          const isHandInput = this.handInput[`${startRow}_${startColumn}`]
+          if (isHandInput) {
+            throw new Error(`不允许编辑: ${id}`)
+          }
+        } else {
+          console.log('id', id)
+          // console.log('params', params)
+        }
+      })
     },
     /**
      * Destroy univer instance and workbook instance
@@ -107,6 +133,10 @@ export default {
         throw new Error('Workbook is not initialized')
       }
       return this.workbook.save()
+    },
+    getCellInfo() {
+      const rangObj = this.univerAPI.getActiveWorkbook().getActiveSheet().getSelection()
+      return rangObj.getActiveRange()
     },
     setData({ pos, value }) {
       const [col, row, colNum, rowNum] = pos

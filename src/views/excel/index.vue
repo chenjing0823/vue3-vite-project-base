@@ -3,14 +3,14 @@
     <div class="btn">
       <button @click="getData" title="print current workbook data to console">Get Data</button>
       <button @click="setData" title="print current workbook data to console">setData</button>
-      <button @click="getArrayData" title="print current workbook data to console">
-        获取导出数据
-      </button>
       <button @click="exportExcel" title="print current workbook data to console">导出</button>
+      <button @click="getCellPosition" title="print current workbook data to console">
+        客户名称
+      </button>
       <input type="file" @change="uploadFile" />
     </div>
 
-    <UniverSheet id="sheet" ref="univerRef" :data="data" v-if="visible" />
+    <UniverSheet :handInput="handInput" id="sheet" ref="univerRef" :data="data" v-if="visible" />
   </div>
 </template>
 
@@ -57,6 +57,16 @@ const rgbToArgb = (color) => {
     return ''
   }
 }
+const pixelsToPoints = (pixels) => {
+  return pixels * 0.75;
+}
+// 像素转换为字符宽度
+const pixelsToCharWidth = (pixels) => {
+    // 假设每个字符的平均宽度为 7 个像素
+    const pixelsPerChar = 7;
+    return pixels / pixelsPerChar;
+};
+
 export default {
   name: 'index',
 
@@ -71,6 +81,7 @@ export default {
 
   data() {
     return {
+      handInput: {},
       data: '',
       rowStyle: {},
       visible: false
@@ -235,6 +246,15 @@ export default {
           rowStyle[cell].font.color = {
             argb: rgbToArgb(value.rgb)
           }
+        } else if (key === 'ff') {
+          // 字体
+          if (!rowStyle[cell]) {
+            rowStyle[cell] = {}
+          }
+          if (!rowStyle[cell].font) {
+            rowStyle[cell].font = {}
+          }
+          rowStyle[cell].font.name = value
         } else if (key === 'fs') {
           // 字体size
           if (!rowStyle[cell]) {
@@ -324,6 +344,25 @@ export default {
       reader.readAsBinaryString(file)
       // Perform file upload logic here
     },
+    getCellPosition() {
+      const cellInfo = this.$refs.univerRef.getCellInfo()
+      const row = +cellInfo.getRow()
+      const column = +cellInfo.getColumn()
+      let val = cellInfo.getValue()
+      if (val) {
+        val += '{客户名称}'
+      } else {
+        val = '{客户名称}'
+      }
+      this.$refs.univerRef.setData({
+        pos: [row, column, 1, 1],
+        value: val
+      })
+      this.handInput[`${row}_${column}`] = true
+
+      console.log('getColumn', cellInfo.getColumn())
+      console.log('getRow', cellInfo.getRow())
+    },
     exportExcel() {
       const allData = this.$refs.univerRef.getData() // 获取所有的sheet表
       const allSheets = allData.sheets
@@ -333,8 +372,9 @@ export default {
       // 处理每个sheet表
       Object.entries(allSheets).forEach(([key, value]) => {
         const sheet = workbook.addWorksheet(value.name)
-        sheet.properties.defaultRowHeight = value.defaultRowHeight
-        sheet.properties.defaultColWidth = value.defaultColumnWidth / 8.43
+        // 将像素转换为EMU
+        sheet.properties.defaultRowHeight = pixelsToPoints(value.defaultRowHeight)
+        sheet.properties.defaultColWidth = pixelsToCharWidth(value.defaultColumnWidth)
         // ExcelJS中设置列宽的单位是以字符为基准，而不是像素。
         // 通常情况下，Excel中一个字符的宽度大约等于8.43个像素。
 
@@ -415,7 +455,11 @@ export default {
         const { startRow, startColumn, endRow, endColumn } = m
         const startCell = XLSX.utils.encode_cell({ r: startRow, c: startColumn })
         const endCell = XLSX.utils.encode_cell({ r: endRow, c: endColumn })
-        sheet.mergeCells(startCell, endCell)
+        try {
+          sheet.mergeCells(startCell, endCell)
+        } catch (error) {
+          console.log(error)
+        }
         // sheet.mergeCells(startRow + 1, startColumn + 1, endRow + 1, endColumn + 1)
       })
       return merges
@@ -429,13 +473,15 @@ export default {
         let height = +value.h
         if (+value.ia !== 0 && +value.ah) {
           // ia=0 为h高度。ia=1或者没有ia 为ah高度
+          // ah: auto height;
+          // ia: is current row self-adaptive to its content, use ah to set row height when true, else use h.
           height = +value.ah
         }
-        sheet.getRow(+key + 1).height = height
+        sheet.getRow(+key + 1).height = pixelsToPoints(height)
       })
       // 设置列宽
       Object.entries(colData).forEach(([key, value]) => {
-        sheet.getColumn(+key + 1).width = +value.w / 8.43
+        sheet.getColumn(+key + 1).width = pixelsToCharWidth(+value.w)
         // ExcelJS中设置列宽的单位是以字符为基准，而不是像素。
         // 通常情况下，Excel中一个字符的宽度大约等于8.43个像素。
       })
